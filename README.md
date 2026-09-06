@@ -47,3 +47,68 @@ Hệ thống được thiết kế theo mô hình **In-game Currency Exchange / 
 │ 2. vk_user_pockets           │              │ 2. wallet_transactions       │
 │ 3. vk_point_receipts         │              └──────────────────────────────┘
 └──────────────────────────────┘
+
+2. Cấu Trúc Thư Mục Dự Án (File Mapping)
+vankhi-ecosystem/
+├── hub/                                # Mã nguồn VanKhi Hub (Identity & Dashboard)
+│   ├── index.html                      # Giao diện Zen-Tech, tích hợp Google GSI & Modal rút điểm
+│   ├── auth_google.php                 # Backend xác thực Google ID Token & khởi tạo hồ sơ
+│   ├── pull_points.php                 # Backend tiếp nhận lệnh rút điểm, gọi sang Port của Ví
+│   ├── db_vankhi.php                   # Kết nối CSDL riêng vankhi_db (PDO)
+│   └── vankhi_schema.sql               # File khởi tạo Database cho Hub
+│
+└── wallet/                             # Mã nguồn App Ví Độc Lập (Source of Truth)
+    ├── index.html                      # Giao diện quản lý ví người dùng
+    ├── api.php                         # API ví (Đăng nhập, tạo ví, chuyển P2P, nhận điểm game)
+    ├── port.php                        # Cổng API Server-to-Server phục vụ Hub rút điểm
+    └── dbconnect.php                   # Kết nối CSDL của Ví
+
+3. Thiết Kế Cơ Sở Dữ Liệu (Database Schema)
+Cơ sở dữ liệu VanKhi Hub (vankhi_db)
+vk_users: Lưu thông tin định danh Google (google_sub), email, tên hiển thị, avatar và mã vankhi_uid (định dạng VK-xxxx-xxxx).
+
+vk_user_pockets: Lưu số dư điểm khả dụng trong túi (points) của người dùng tại Hub.
+
+vk_point_receipts: Sổ cái ghi nhận lịch sử rút điểm thành công, lưu vết mã ví nguồn và mã đối soát (wallet_tx_ref).
+
+Cơ sở dữ liệu App Ví
+point_wallets: Lưu trữ mã ví công khai 20 ký tự, mật khẩu mã hóa Bcrypt và số dư điểm cày cuốc.
+
+wallet_transactions: Ghi chép biến động số dư chi tiết (balance_before, balance_after, loại giao dịch).
+
+4. Hướng Dẫn Cài Đặt (Quick Start)
+Bước 1: Khởi tạo CSDL
+Tạo database cho Hub và chạy file hub/vankhi_schema.sql.
+
+Cấu hình thông số database tương ứng trong file hub/db_vankhi.php.
+
+Bước 2: Thiết lập Google Identity Services
+Truy cập Google Cloud Console, tạo mới OAuth 2.0 Client ID (loại Web application).
+
+Thêm domain chạy Hub vào mục Authorized JavaScript origins.
+
+Mở hub/index.html và thay thế hằng số GOOGLE_CLIENT_ID bằng Client ID vừa tạo.
+
+Bước 3: Cấu hình Khóa Bí Mật Kết Nối (Secret Key)
+Đảm bảo khóa bảo mật Server-to-Server phải trùng khớp giữa hai bên:
+
+Trong hub/pull_points.php: Khai báo define('HUB_ACCESS_KEY', 'CHON_KHOA_BI_MAT_CUA_BAN');
+
+Trong wallet/port.php: Khai báo define('HUB_ACCESS_KEY', 'CHON_KHOA_BI_MAT_CUA_BAN');
+
+5. Lộ Trình Phát Triển (Roadmap)
+[x] Giai đoạn 1 (Core Identity & Currency Exchange):
+
+[x] Đăng nhập một chạm bằng Google One-Tap / GSI.
+
+[x] Giao diện Dashboard phong cách Cyber-Fengshui / Zen-Tech.
+
+[x] Module rút điểm an toàn Server-to-Server chống Race Condition.
+
+[ ] Giai đoạn 2 (Consumption & Progression):
+
+[ ] Xây dựng hệ thống Cây Kỹ Năng (Skill Tree / Perks System).
+
+[ ] Tính năng "Gắn liên kết ví" (Link Wallet) lưu cố định mã ví vào hồ sơ người dùng.
+
+[ ] Module Chợ Vật Phẩm (Inventory / Store) tiêu thụ điểm VKP.
