@@ -29,3 +29,5 @@
                         |                                        |
                  [ NGƯỜI DÙNG ]                           [ SERVER HUB ]
               (Thao tác qua Web UI)                    (Máy chủ gọi ngầm M2M)
+
+https://docs.google.com/document/d/e/2PACX-1vRypczVTtGqJZZx3iBOPPE3eb49iSh-jE4wM7Lpk7e_QiInfg92k5QqauOgQzBoZaWCP-8MRZflEEqU/pub
